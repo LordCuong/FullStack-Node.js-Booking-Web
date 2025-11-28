@@ -32,7 +32,7 @@ let createNewUser = async (data) => {
 let hashUserPassword = (password) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const hashPassword = await bcrypt.hashSync("password", salt);
+            const hashPassword = await bcrypt.hashSync(password, salt);
             resolve(hashPassword);
         } catch (e) {
             reject(e);
@@ -51,7 +51,68 @@ let getAllUser = async () => {
         }
     })
 }
+let getUserInfoById = async (userId) => {
+    return new Promise (async(resolve, reject) => {
+        try{
+            let user = await db.User.findOne({
+                where : {id: userId},
+            })
+            if (user) {
+                resolve(user);
+            }
+            else {
+                resolve(null);
+            }
+        }catch(e){
+            reject(e);
+        }
+    })
+}
+
+let updateUserData = async ( data) => {
+    return new Promise (async(resolve, reject) => {
+        try{
+            let user= await db.User.findOne({
+                where: {id: data.id},
+                raw: false,
+            })
+            if(user){
+                user.firstName= data.firstName;
+                user.lastName= data.lastName;
+                user.address= data.address;
+                await user.save();
+                let allUser = await db.User.findAll({})
+                resolve(allUser);
+            }
+            else{
+                resolve(null);
+            }
+        }catch(e){
+            reject( e );
+        }
+    })
+}
+let deleteUserById = async (userId) => {
+    return new Promise (async (resolve, reject) => {
+        try{
+            let user = await db.User.findOne({
+                where: {id: userId},
+                raw: false,
+            })
+            if( user){
+                await user.destroy();
+            }
+            resolve(null);
+        }
+        catch(e){
+            reject(e);
+        }
+    })
+}
 module.exports = {
     createNewUser: createNewUser,
     getAllUser: getAllUser,
+    getUserInfoById: getUserInfoById,
+    updateUserData: updateUserData,
+    deleteUserById: deleteUserById,
 }
