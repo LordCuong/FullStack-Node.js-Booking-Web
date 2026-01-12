@@ -9,7 +9,7 @@ let handleUserLogin = (email, password) => {
             let isExist = await checkUserEmail(email);
             if (isExist) { //check user email
                 let user = await db.User.findOne({
-                    attributes: ['email', 'roleId', 'password','firstName','lastName'],
+                    attributes: ['email', 'roleId', 'password', 'firstName', 'lastName'],
                     where: { email: email },
                     raw: true,
                 }
@@ -107,7 +107,7 @@ let createNewUser = (data) => {
             //check email co ton tai ko?
             let check = await checkUserEmail(data.email);
             if (check) {
-               return resolve({
+                return resolve({
                     errCode: 1,
                     message: "your email is exits! try another email",
                 });
@@ -121,10 +121,10 @@ let createNewUser = (data) => {
                 lastName: data.lastName,
                 address: data.address,
                 phonenumber: data.phonenumber,
-                gender: data.gender === '1' ? true : false,
-                // image: data.image,
+                gender: data.gender,
+                image: data.avatar,
                 roleId: data.roleId,
-                // positionId: data.positionId,
+                positionId: data.positionId,
 
             })
             resolve({
@@ -166,10 +166,10 @@ let deleteUser = (userId) => {
 let updateUserData = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            if(!data.id){
+            if (!data.id || !data.roleId || !data.positionId || !data.gender) {
                 resolve({
                     errCode: 1,
-                    errMessage: 'not found id to edit'
+                    errMessage: 'missing required parameters'
                 })
             }
             let user = await db.User.findOne({
@@ -180,6 +180,13 @@ let updateUserData = (data) => {
                 user.firstName = data.firstName;
                 user.lastName = data.lastName;
                 user.address = data.address;
+                user.roleId=data.roleId;
+                user.positionId=data.positionId;
+                user.gender=data.gender;
+                user.phonenumber=data.phonenumber;
+                if(data.avatar){
+                    user.image=data.avatar;
+                }
                 await user.save();
                 resolve({
                     errCode: 0,
@@ -189,7 +196,7 @@ let updateUserData = (data) => {
             else {
                 resolve({
                     errCode: 1,
-                    errMessage:" user not found",
+                    errMessage: " user not found",
                 });
             }
         } catch (e) {
@@ -198,24 +205,24 @@ let updateUserData = (data) => {
     })
 }
 
-let getAllCodeService = (typeInput)=>{
-    return new Promise (async(resolve,reject)=>{
-        try{
-            if(! typeInput){
+let getAllCodeService = (typeInput) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!typeInput) {
                 resolve({
                     errCode: 1,
                     errMessage: "missing input type Allcode",
                 })
-            }else{
-            let res={};
-            let allcode=await db.Allcode.findAll({
-                where: {type: typeInput}
-            });
-            res.errCode=0;
-            res.data=allcode;
-            resolve(res);
-        }
-        }catch(e){
+            } else {
+                let res = {};
+                let allcode = await db.Allcode.findAll({
+                    where: { type: typeInput }
+                });
+                res.errCode = 0;
+                res.data = allcode;
+                resolve(res);
+            }
+        } catch (e) {
             reject(e);
         }
     })

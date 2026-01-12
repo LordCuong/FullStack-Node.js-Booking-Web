@@ -37,7 +37,6 @@ class Login extends Component {
     onUsernameChange = (e) => {
         this.setState({ username: e.target.value })
     }
-
     onPasswordChange = (e) => {
         this.setState({ password: e.target.value })
     }

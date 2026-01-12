@@ -20,9 +20,12 @@ module.exports = {
                 type: Sequelize.INTEGER
             },
             date: {
-                type: Sequelize.DATE
+                type: Sequelize.STRING
             },
             timeType: {
+                type: Sequelize.STRING
+            },
+            token:{
                 type: Sequelize.STRING
             },
             files: {
@@ -39,6 +42,14 @@ module.exports = {
                 type: Sequelize.DATE
             }
         });
+        await queryInterface.addIndex(
+            'Bookings',
+            ['doctorId', 'date', 'timeType'],
+            {
+                unique: true,
+                name: 'unique_doctor_date_time'
+            }
+        );
     },
     down: async (queryInterface, Sequelize) => {
         await queryInterface.dropTable('Bookings');

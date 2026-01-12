@@ -17,11 +17,18 @@ module.exports = (sequelize, DataTypes) => {
         statusId: DataTypes.STRING,
         doctorId: DataTypes.INTEGER,
         patientId: DataTypes.INTEGER,
-        date: DataTypes.DATE,
+        date: DataTypes.STRING,
         timeType: DataTypes.STRING,
+        token: DataTypes.STRING
     }, {
         sequelize,
         modelName: 'Booking',
+        indexes: [
+            {
+                unique: true,
+                fields: ['doctorId', 'date', 'timeType']
+            }
+        ]
     });
     return Booking;
 };
